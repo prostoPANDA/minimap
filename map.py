@@ -38,10 +38,17 @@ class Map:
                     sys.exit()
 
                 if event.type == p.KEYDOWN:
+                    if event.key == p.K_ESCAPE:
+                        p.quit()
+                        sys.exit()
+
                     if event.key == p.K_m and self.l != 'map':
                         self.l = 'map'
                     elif event.key == p.K_c and self.l != 'sat':
                         self.l = 'sat'
+                    elif event.key == p.K_z and self.l != 'skl':
+                        self.l = 'skl'
+
 
                     if event.key == p.K_PAGEUP:
                         self.spn[0] += self.ZOOM_DELTA
