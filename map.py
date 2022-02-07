@@ -39,6 +39,13 @@ class Map(QWidget):
         self.reset_button.clicked.connect(self.on_click_reset)
         self.reset_button.resize(200, 32)
 
+        self.postcode = ''
+        self.postcode_flag = False
+        self.postcode_button = QPushButton('Индекс', self)
+        self.postcode_button.move(300, 45)
+        self.postcode_button.clicked.connect(self.postcode_find)
+        self.postcode_button.resize(80, 32)
+
         self.adress_lable = QLabel(self)
         self.adress_lable.setText("")
         self.adress_lable.resize(500, 10)
@@ -62,6 +69,15 @@ class Map(QWidget):
         self.map_img = self.get_map()
         self.show()
 
+    def postcode_find(self):
+        if self.postcode:
+            if not self.postcode_flag:
+                self.postcode_flag = self.adress_lable.text()
+                self.adress_lable.setText(self.postcode_flag + ' Почтовый индекс: ' + self.postcode)
+            else:
+                self.adress_lable.setText(self.postcode_flag)
+                self.postcode_flag = False
+
     def on_click_find(self):
         toponym_to_find = self.textbox.text()
         geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
@@ -75,6 +91,11 @@ class Map(QWidget):
         json_response = response.json()
         toponym = json_response["response"]["GeoObjectCollection"][
             "featureMember"][0]["GeoObject"]
+        try:
+            self.postcode = toponym["metaDataProperty"]["GeocoderMetaData"]["Address"]['postal_code']
+        except Exception as err:
+            self.postcode = ''
+        self.postcode_flag = False
         toponym_coodrinates = toponym["Point"]["pos"]
         toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
         self.ll = [float(toponym_longitude), float(toponym_lattitude)]
