@@ -85,9 +85,13 @@ class Map(QWidget):
             "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
             "geocode": toponym_to_find,
             "format": "json"}
-        response = requests.get(geocoder_api_server, params=geocoder_params)
+        response = None
+        try:
+            response = requests.get(geocoder_api_server, params=geocoder_params)
+        except Exception as err:
+            return
         if not response:
-            pass
+            return
         json_response = response.json()
         toponym = json_response["response"]["GeoObjectCollection"][
             "featureMember"][0]["GeoObject"]
